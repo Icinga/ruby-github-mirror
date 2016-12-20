@@ -22,8 +22,8 @@ Fill `settings.yml` with config
 And run the tool:
 
     bundle install
-    bundle exec ./bin/github-mirror list
-    bundle exec ./bin/github-mirror sync
+    bundle exec ./bin/github-mirror --list
+    bundle exec ./bin/github-mirror --sync
     
 ## Copyright
 

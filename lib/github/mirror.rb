@@ -72,10 +72,10 @@ module Github
           @arguments[:config] = v
         end
 
-        opts.on('list') do
+        opts.on('--list') do
           @arguments[:action] = 'list'
         end
-        opts.on('sync') do
+        opts.on('--sync') do
           @arguments[:action] = 'sync'
         end
       end.parse!
