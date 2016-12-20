@@ -63,7 +63,7 @@ module Github
         repo     = "#{work_dir}/#{@name}.git"
 
         unless File.exist?(repo)
-          Git.init(@name,
+          Git.init(repo,
                    bare:       true,
                    repository: repo)
         end
