@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'github_api', '~> 0.14'
   spec.add_dependency 'gitlab', '~> 3.7'
+  spec.add_dependency 'git', '~> 1.3'
 
   spec.add_dependency 'deep_merge', '~> 1.1'
 

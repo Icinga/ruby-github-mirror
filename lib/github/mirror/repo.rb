@@ -1,3 +1,5 @@
+require 'git'
+
 module Github
   module Mirror
     class Repo
@@ -6,7 +8,7 @@ module Github
       attr_reader :github, :api_data
 
       def initialize(name, github, api_data)
-        @name = name
+        @name   = name
         @github = github
 
         @api_data = api_data
@@ -22,18 +24,25 @@ module Github
 
       def sync
         unless @target.exists?
-          puts "Creating repo #{@name} in target"
+          Mirror.logger.info "Creating repo #{@name} in target"
           @target.create
         end
+
         sync_settings
+        sync_data
+        sync_data_to_target
+      end
+
+      def target_url
+        @target.project.ssh_url_to_repo
       end
 
       def sync_settings
-        update = {}
-        project = @target.project
-        desc = "[GitHub Mirror] #{description}"
+        update                    = {}
+        project                   = @target.project
+        desc                      = "[GitHub Mirror] #{description}"
 
-        update[:description] = desc if desc != project.description
+        update[:description]      = desc if desc != project.description
         # ensure public
         update[:visibility_level] = 20 if project.visibility_level < 20
 
@@ -45,8 +54,41 @@ module Github
 
         return if update.empty?
 
-        puts "Updating #{update}"
+        Mirror.logger.info "Updating settings for #{@name}: #{update}"
         @target.edit(update)
+      end
+
+      def git
+        work_dir = Github::Mirror.work_dir
+        repo     = "#{work_dir}/#{@name}.git"
+
+        Git.init(@name,
+          bare:       true,
+          repository: repo
+        ) unless File.exist?(repo)
+
+        Git.bare(repo)
+      end
+
+      def sync_data(fetch_opts = '+refs/*:refs/*')
+        origin = git.remote('origin')
+        origin = git.add_remote('origin', clone_url) unless origin.url
+        git.lib.config_set('remote.origin.url', clone_url) unless origin.url == clone_url
+        git.lib.config_set('remote.origin.fetch', fetch_opts) unless origin.fetch_opts == fetch_opts
+
+        Mirror.logger.info 'Fetching data from origin'
+        git.fetch('origin', mirror: true)
+      end
+
+      def sync_data_to_target
+        target = git.remote('target')
+        target = git.add_remote('target', target_url) unless target.url
+        git.lib.config_set('remote.target.url', target_url) unless target.url == target_url
+
+        Mirror.logger.info 'Pushing data to target'
+        # TODO: improve this, we need to access a private function
+        # git.lib.command('push', %w(target --mirror))
+        git.lib.instance_eval('command(\'push\', %w(target --mirror))')
       end
     end
   end

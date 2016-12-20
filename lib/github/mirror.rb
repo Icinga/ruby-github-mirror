@@ -16,6 +16,7 @@ module Github
     }
     @github = nil
     @target = nil
+    @logger = nil
 
     def self.config_file
       file = nil
@@ -100,14 +101,25 @@ module Github
 
     def self.repo_sync
       github.repos.list.each do |repo|
-        puts repo.name
+        logger.info "Syncing #{repo.name}..."
 
         r = Repo.new(repo.name, github, repo)
-        t = target.new(repo.name)
-        r.target = t
+        r.target = target.new(repo.name)
 
         r.sync
       end
+    end
+
+    def self.work_dir
+      return config[:work_dir] if config[:work_dir]
+
+      dir = File.dirname(File.dirname(File.dirname(__FILE__))) + '/tmp'
+      Dir.mkdir(dir) unless File.exists?(dir)
+      dir
+    end
+
+    def self.logger
+      @logger ||= Logger.new(STDOUT)
     end
   end
 end
