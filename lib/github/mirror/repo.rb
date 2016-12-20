@@ -62,10 +62,11 @@ module Github
         work_dir = Github::Mirror.work_dir
         repo     = "#{work_dir}/#{@name}.git"
 
-        Git.init(@name,
-          bare:       true,
-          repository: repo
-        ) unless File.exist?(repo)
+        unless File.exist?(repo)
+          Git.init(@name,
+                   bare:       true,
+                   repository: repo)
+        end
 
         Git.bare(repo)
       end

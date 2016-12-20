@@ -114,7 +114,7 @@ module Github
       return config[:work_dir] if config[:work_dir]
 
       dir = File.dirname(File.dirname(File.dirname(__FILE__))) + '/tmp'
-      Dir.mkdir(dir) unless File.exists?(dir)
+      Dir.mkdir(dir) unless File.exist?(dir)
       dir
     end
 

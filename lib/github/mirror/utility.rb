@@ -3,7 +3,7 @@ module Github
     # Helper functions for Github::Mirror
     module Utility
       def self.hash_symbolize(hash)
-        hash.inject({}) do |memo, (k, v)|
+        hash.each_with_object({}) do |(k, v), memo|
           memo[k.to_sym] = v
           memo
         end
