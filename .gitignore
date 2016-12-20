@@ -1,6 +1,7 @@
 ## PROJECT
 /settings.yml
 /tmp
+/id_rsa*
 
 ## EDITORS
 .*.sw[op]
