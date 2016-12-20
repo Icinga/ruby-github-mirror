@@ -2,8 +2,10 @@ require 'github_api'
 require 'optparse'
 
 require 'github/mirror/utility'
+require 'github/mirror/repo'
 
 module Github
+  # Mirror helper to mirror a whole GitHub organization into another Git environment
   module Mirror
     @arguments = nil
     @config = nil
@@ -13,6 +15,7 @@ module Github
       }
     }
     @github = nil
+    @target = nil
 
     def self.config_file
       file = nil
@@ -32,8 +35,23 @@ module Github
       @config = @config_default
       data = YAML.load(File.read(config_file))
       @config.deep_merge!(Utility.hash_deep_symbolize(data))
-      puts @config
+
+      raise ArgumentError, 'github / user must be configured!' unless @config[:github][:user]
       @config
+    end
+
+    def self.target
+      return @target if @target
+
+      t = @config[:target]
+      raise ArgumentError, 'target not configured' unless t
+
+      raise ArgumentError, "target #{t} is not implemented" unless t == 'gitlab'
+
+      require 'github/mirror/target/gitlab'
+      @target = Target::Gitlab
+      @target.setup(@config[t.to_sym])
+      @target
     end
 
     def self.github
@@ -56,6 +74,9 @@ module Github
         opts.on('list') do
           @arguments[:action] = 'list'
         end
+        opts.on('sync') do
+          @arguments[:action] = 'sync'
+        end
       end.parse!
     end
 
@@ -65,16 +86,27 @@ module Github
       action = @arguments[:action] || 'list'
 
       return repo_list if action == 'list'
+      return repo_sync if action == 'sync'
 
       raise ArgumentError, "action #{action} is invalid!"
     end
 
     def self.repo_list
-      repos = github.repos.list
+      github.repos.list.each do |repo|
+        r = Repo.new(repo.name, github, repo)
+        puts "#{r.name} -> #{r.clone_url}"
+      end
+    end
 
-      repos.each do |repo|
-        p repo.class
-        p repo
+    def self.repo_sync
+      github.repos.list.each do |repo|
+        puts repo.name
+
+        r = Repo.new(repo.name, github, repo)
+        t = target.new(repo.name)
+        r.target = t
+
+        r.sync
       end
     end
   end

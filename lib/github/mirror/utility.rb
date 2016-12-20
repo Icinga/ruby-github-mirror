@@ -1,5 +1,6 @@
 module Github
   module Mirror
+    # Helper functions for Github::Mirror
     module Utility
       def self.hash_symbolize(hash)
         hash.inject({}) do |memo, (k, v)|

@@ -1,3 +1,11 @@
 ---
 github:
   oauth_token: XXXXXXXXXXX
+  user: myorg
+
+target: gitlab
+
+gitlab:
+  endpoint: https://gitlab.example.com/api/v3
+  private_token: XXXXXXXXXXXX
+  group: test
