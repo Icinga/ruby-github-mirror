@@ -1,0 +1,11 @@
+## PROJECT
+/settings.yml
+/tmp
+
+## EDITORS
+.*.sw[op]
+/.idea/
+*~
+
+## Ruby
+/Gemfile.lock

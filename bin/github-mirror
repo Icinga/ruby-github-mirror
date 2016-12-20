@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'github/mirror'
+
+Github::Mirror.main(ARGV)
