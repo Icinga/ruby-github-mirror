@@ -37,8 +37,16 @@ module Github
           false
         end
 
+        def api_identifier
+          "#{@@group}%2F#{@name}"
+        end
+
         def project
-          @project ||= ::Gitlab.project("#{@@group}%2F#{@name}")
+          @project ||= ::Gitlab.project(api_identifier)
+        end
+
+        def branches
+          @branches ||= ::Gitlab.branches(api_identifier)
         end
 
         def create(options = {})
@@ -48,6 +56,11 @@ module Github
 
         def edit(options = {})
           @project = ::Gitlab.edit_project(@project.id, options)
+        end
+
+        def unprotect_branch(branch)
+          @branches = nil
+          ::Gitlab.unprotect_branch(api_identifier, branch)
         end
       end
     end

@@ -29,6 +29,7 @@ module Github
         end
 
         sync_settings
+        sync_branch_settings
         sync_data
         sync_data_to_target
       end
@@ -56,6 +57,16 @@ module Github
 
         Mirror.logger.info "Updating settings for #{@name}: #{update}"
         @target.edit(update)
+      end
+
+      # disable any protection on branches
+      def sync_branch_settings
+        @target.branches.each do |branch|
+          next unless branch.protected
+
+          Mirror.logger.info "Unprotecting branch #{branch.name}"
+          @target.unprotect_branch(branch.name)
+        end
       end
 
       def git
