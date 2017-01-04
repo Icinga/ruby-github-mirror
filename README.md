@@ -27,7 +27,7 @@ And run the tool:
     
 If you want to use a local SSH identity file:
 
-    GIT_SSH_COMMAND="/usr/bin/ssh -i `pwd`/id_rsa" bundle exec ./bin/github-mirror --sync
+    SSH_AUTH_SOCK= GIT_SSH_COMMAND="/usr/bin/ssh -i `pwd`/id_rsa" bundle exec ./bin/github-mirror --sync
     
 ## Copyright
 
