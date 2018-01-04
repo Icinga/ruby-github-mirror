@@ -7,5 +7,6 @@ target: gitlab
 
 gitlab:
   endpoint: https://gitlab.example.com/api/v3
+  visibility: public
   private_token: XXXXXXXXXXXX
   group: test

@@ -37,6 +37,10 @@ Fill `settings.yml` with config
       endpoint: https://gitlab.awesome.corp/api/v3
       private_token: XXXXXXXXXXXX
       group: github-mirror
+      visibility: public
+
+You can omit visibility setting to keep projects ```public```. Otherwise use ```private``` or ```internal``` if you need
+to change that.
 
 And run the tool:
 
