@@ -20,7 +20,7 @@ module Github
           @@group = hash.delete(:group)
 
           if hash[:visibility]
-            @@visibility = hash.delete(:visibility)
+            @@visibility = hash.delete(:visibility).to_sym
           end
 
           raise ArgumentError, 'Visibility must be one of public, private or internal!' unless @@visibility_level[@@visibility]
